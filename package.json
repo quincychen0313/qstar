@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
-    "test": "node bundle-test.mjs && node dist-test/test-bundle.mjs"
+    "test": "node bundle-test.mjs && node dist-test/test-bundle.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",

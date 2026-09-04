@@ -75,3 +75,27 @@ npm run build
 ```bash
 npm test
 ```
+
+---
+
+## GitHub Pages 部署結構
+
+本專案採原始碼 + GitHub Actions 自動建置方式，不使用 `/docs` 直接發布。
+
+```text
+qstar/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml
+├── public/
+├── src/
+├── index.html
+├── package.json
+├── package-lock.json
+├── vite.config.ts
+├── tsconfig.json
+└── tailwind.config.js
+```
+
+GitHub Repository → **Settings → Pages → Source → GitHub Actions**。
+每次 push 到 `main`，Actions 會自動執行 Vite build，並把 `dist/` 發布到 GitHub Pages。
