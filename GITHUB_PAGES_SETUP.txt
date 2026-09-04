@@ -1,0 +1,14 @@
+qstar GitHub Pages 發布設定（不使用 Actions）
+
+1. 將本資料夾內所有檔案與資料夾上傳到 GitHub repository：quincychen0313/qstar 的 main branch。
+2. GitHub repository 進入 Settings > Pages。
+3. Build and deployment > Source 選「Deploy from a branch」。
+4. Branch 選 main，Folder 選 /docs，按 Save。
+
+網站網址：
+https://quincychen0313.github.io/qstar/
+
+重要：
+- 不要選 GitHub Actions。
+- 不要把 ZIP 本身直接上傳；請先解壓縮，再上傳解壓後的內容。
+- docs/index.html 與 docs/assets/ 必須存在。
