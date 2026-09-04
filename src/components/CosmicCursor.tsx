@@ -8,17 +8,10 @@ type TrailStar = {
   x: number;
   y: number;
   size: number;
-  life: number;
-};
-
-const supportsCustomCursor = () => {
-  if (typeof window === 'undefined') return false;
-  return window.matchMedia('(pointer: fine)').matches;
 };
 
 export function CosmicCursor() {
   const { theme } = useApp();
-  const [enabled, setEnabled] = useState(false);
   const [visible, setVisible] = useState(false);
   const [pressed, setPressed] = useState(false);
   const [introVisible, setIntroVisible] = useState(true);
@@ -30,63 +23,79 @@ export function CosmicCursor() {
   const rafRef = useRef<number | null>(null);
   const lastTrailRef = useRef<Point>({ x: -100, y: -100 });
   const trailIdRef = useRef(0);
+  const activatedRef = useRef(false);
 
   useEffect(() => {
-    const mq = window.matchMedia('(pointer: fine)');
-    const update = () => setEnabled(supportsCustomCursor());
-    update();
-    mq.addEventListener?.('change', update);
-    return () => mq.removeEventListener?.('change', update);
-  }, []);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => setIntroVisible(false), 1050);
+    const timer = window.setTimeout(() => setIntroVisible(false), 1150);
     return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if (!enabled) return;
-
-    const onMove = (event: MouseEvent) => {
-      target.current = { x: event.clientX, y: event.clientY };
-      if (!visible) {
-        rendered.current = { x: event.clientX, y: event.clientY };
-        setVisible(true);
+    const activate = (x: number, y: number) => {
+      if (!activatedRef.current) {
+        activatedRef.current = true;
+        document.documentElement.classList.add('custom-cursor-active');
+        target.current = { x, y };
+        rendered.current = { x, y };
+        lastTrailRef.current = { x, y };
       }
+      setVisible(true);
+    };
 
+    const onPointerMove = (event: PointerEvent) => {
+      // Touch screens keep their native touch behaviour. A real mouse/trackpad
+      // immediately activates the custom cursor, including Safari on macOS.
+      if (event.pointerType === 'touch') return;
+      activate(event.clientX, event.clientY);
+      target.current = { x: event.clientX, y: event.clientY };
+
+      // Light mode must have zero intentional lag.
       if (theme === 'light' && cursorRef.current) {
-        rendered.current = target.current;
+        rendered.current = { x: event.clientX, y: event.clientY };
+        cursorRef.current.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+      }
+    };
+
+    // Fallback for browsers/environments that do not report PointerEvent cleanly.
+    const onMouseMove = (event: MouseEvent) => {
+      activate(event.clientX, event.clientY);
+      target.current = { x: event.clientX, y: event.clientY };
+      if (theme === 'light' && cursorRef.current) {
+        rendered.current = { x: event.clientX, y: event.clientY };
         cursorRef.current.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
       }
     };
 
     const onLeave = () => setVisible(false);
-    const onEnter = () => setVisible(true);
+    const onEnter = () => {
+      if (activatedRef.current) setVisible(true);
+    };
     const onDown = () => setPressed(true);
     const onUp = () => setPressed(false);
 
-    window.addEventListener('mousemove', onMove, { passive: true });
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
     document.documentElement.addEventListener('mouseleave', onLeave);
     document.documentElement.addEventListener('mouseenter', onEnter);
     window.addEventListener('mousedown', onDown);
     window.addEventListener('mouseup', onUp);
 
     return () => {
-      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('mousemove', onMouseMove);
       document.documentElement.removeEventListener('mouseleave', onLeave);
       document.documentElement.removeEventListener('mouseenter', onEnter);
       window.removeEventListener('mousedown', onDown);
       window.removeEventListener('mouseup', onUp);
+      document.documentElement.classList.remove('custom-cursor-active');
     };
-  }, [enabled, theme, visible]);
+  }, [theme]);
 
   useEffect(() => {
-    if (!enabled) return;
-
     const animate = () => {
-      if (theme === 'dark') {
-        // Intentional inertia: the star glides behind the pointer instead of snapping to it.
-        const ease = 0.13;
+      if (theme === 'dark' && activatedRef.current) {
+        // Deliberate inertial drag: visible but controlled, not sluggish.
+        const ease = 0.105;
         rendered.current.x += (target.current.x - rendered.current.x) * ease;
         rendered.current.y += (target.current.y - rendered.current.y) * ease;
 
@@ -96,20 +105,19 @@ export function CosmicCursor() {
 
         const dx = rendered.current.x - lastTrailRef.current.x;
         const dy = rendered.current.y - lastTrailRef.current.y;
-        if (visible && Math.hypot(dx, dy) > 12) {
+        if (visible && Math.hypot(dx, dy) > 10) {
           lastTrailRef.current = { ...rendered.current };
           const id = trailIdRef.current++;
           const nextStar: TrailStar = {
             id,
-            x: rendered.current.x + (Math.random() - 0.5) * 5,
-            y: rendered.current.y + (Math.random() - 0.5) * 5,
-            size: 2.5 + Math.random() * 3.5,
-            life: 1,
+            x: rendered.current.x + (Math.random() - 0.5) * 7,
+            y: rendered.current.y + (Math.random() - 0.5) * 7,
+            size: 2.5 + Math.random() * 4.5,
           };
-          setTrailStars((stars) => [...stars.slice(-7), nextStar]);
+          setTrailStars((stars) => [...stars.slice(-9), nextStar]);
           window.setTimeout(() => {
             setTrailStars((stars) => stars.filter((star) => star.id !== id));
-          }, 520);
+          }, 600);
         }
       }
 
@@ -120,21 +128,24 @@ export function CosmicCursor() {
     return () => {
       if (rafRef.current !== null) window.cancelAnimationFrame(rafRef.current);
     };
-  }, [enabled, theme, visible]);
+  }, [theme, visible]);
 
   useEffect(() => {
     setTrailStars([]);
     lastTrailRef.current = { ...rendered.current };
+    if (theme === 'light' && cursorRef.current && activatedRef.current) {
+      cursorRef.current.style.transform = `translate3d(${target.current.x}px, ${target.current.y}px, 0)`;
+    }
   }, [theme]);
-
-  if (!enabled) return null;
 
   return (
     <>
       {introVisible && (
-        <div className="cursor-intro-flash" aria-hidden="true">
+        <div className={`cursor-intro-flash cursor-intro-flash--${theme}`} aria-hidden="true">
           <span className="cursor-intro-flare cursor-intro-flare--horizontal" />
           <span className="cursor-intro-flare cursor-intro-flare--vertical" />
+          <span className="cursor-intro-flare cursor-intro-flare--diag-a" />
+          <span className="cursor-intro-flare cursor-intro-flare--diag-b" />
           <span className="cursor-intro-ring" />
           <span className="cursor-intro-core" />
         </div>
@@ -163,9 +174,9 @@ export function CosmicCursor() {
         {theme === 'dark' ? (
           <div className="cosmic-star-cursor">
             <span className="cosmic-star-glow" />
-            <svg viewBox="0 0 40 40" focusable="false">
-              <path d="M20 1.5C21.8 12.9 24.2 16.1 38.5 20C24.2 23.9 21.8 27.1 20 38.5C18.2 27.1 15.8 23.9 1.5 20C15.8 16.1 18.2 12.9 20 1.5Z" />
-              <circle cx="20" cy="20" r="2.2" />
+            <svg viewBox="0 0 48 48" focusable="false" aria-hidden="true">
+              <path d="M24 1C26.1 15.3 29.2 19.2 47 24C29.2 28.8 26.1 32.7 24 47C21.9 32.7 18.8 28.8 1 24C18.8 19.2 21.9 15.3 24 1Z" />
+              <circle cx="24" cy="24" r="2.6" />
             </svg>
           </div>
         ) : (

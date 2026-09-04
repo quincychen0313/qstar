@@ -73,12 +73,10 @@ html:not(.dark) .celestial-bg {
    Dark: delayed star + subtle stellar trail
    Light: zero-lag sun
    ───────────────────────────────────────────────────────────── */
-@media (pointer: fine) {
-  html,
-  body,
-  body * {
-    cursor: none !important;
-  }
+html.custom-cursor-active,
+html.custom-cursor-active body,
+html.custom-cursor-active body * {
+  cursor: none !important;
 }
 
 .cosmic-cursor {
@@ -114,8 +112,8 @@ html:not(.dark) .celestial-bg {
 
 /* Dark mode star pointer */
 .cosmic-star-cursor {
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
   filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.75)) drop-shadow(0 0 10px rgba(125, 211, 252, 0.6));
@@ -123,8 +121,8 @@ html:not(.dark) .celestial-bg {
 
 .cosmic-star-cursor svg {
   position: relative;
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   overflow: visible;
   animation: cursorStarBreathe 1.65s ease-in-out infinite;
 }
@@ -232,6 +230,18 @@ html:not(.dark) .celestial-bg {
   filter: blur(0.5px) drop-shadow(0 0 9px rgba(251,191,36,0.75));
   animation: cursorIntroVertical 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+
+.cursor-intro-flare--diag-a,
+.cursor-intro-flare--diag-b {
+  width: min(48vw, 520px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), rgba(255,248,220,0.86), rgba(255,255,255,0.12), transparent);
+  filter: blur(0.35px) drop-shadow(0 0 8px rgba(251,191,36,0.62));
+  animation: cursorIntroHorizontal 720ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.cursor-intro-flare--diag-a { rotate: 35deg; }
+.cursor-intro-flare--diag-b { rotate: -35deg; }
 
 .cursor-intro-ring {
   width: 28px;
