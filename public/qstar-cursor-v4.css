@@ -1,0 +1,252 @@
+/* qstar theme cursor v4 — standalone, Safari-safe, build-independent */
+html.qstar-cursor-enabled,
+html.qstar-cursor-enabled body,
+html.qstar-cursor-enabled body * {
+  cursor: none !important;
+}
+
+#qstar-theme-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform;
+  transition: opacity 110ms ease, visibility 110ms ease;
+}
+
+#qstar-theme-cursor.qstar-cursor-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.qstar-pointer-star,
+.qstar-pointer-sun {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+  transition: scale 110ms cubic-bezier(.16, 1, .3, 1), filter 160ms ease;
+}
+
+#qstar-theme-cursor.qstar-cursor-down .qstar-pointer-star,
+#qstar-theme-cursor.qstar-cursor-down .qstar-pointer-sun {
+  scale: .72;
+}
+
+#qstar-theme-cursor.qstar-cursor-over-action .qstar-pointer-star,
+#qstar-theme-cursor.qstar-cursor-over-action .qstar-pointer-sun {
+  scale: 1.22;
+}
+
+/* Dark mode: luminous delayed star */
+.qstar-pointer-star {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  filter:
+    drop-shadow(0 0 3px rgba(255,255,255,.95))
+    drop-shadow(0 0 9px rgba(186,230,253,.92))
+    drop-shadow(0 0 18px rgba(129,140,248,.56));
+}
+
+.qstar-pointer-star svg {
+  width: 42px;
+  height: 42px;
+  overflow: visible;
+  animation: qstarStarPulse 1.45s ease-in-out infinite;
+}
+
+.qstar-pointer-star .qstar-star-main { fill: #ffffff; }
+.qstar-pointer-star .qstar-star-core { fill: #fde68a; }
+.qstar-pointer-star .qstar-star-orbit {
+  fill: none;
+  stroke: rgba(186,230,253,.66);
+  stroke-width: .8;
+  stroke-dasharray: 2.2 3.6;
+  transform-origin: 24px 24px;
+  animation: qstarOrbitSpin 3.6s linear infinite;
+}
+
+.qstar-pointer-star::before {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.95) 0%, rgba(186,230,253,.30) 38%, transparent 73%);
+  filter: blur(2px);
+  animation: qstarStarGlow 1.45s ease-in-out infinite;
+}
+
+/* Light mode: immediate sun */
+.qstar-pointer-sun {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 0 6px rgba(245,158,11,.58));
+  animation: qstarSunTurn 8s linear infinite;
+}
+
+.qstar-sun-core {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #fffdf0 0 12%, #fde68a 29%, #fbbf24 62%, #f59e0b 100%);
+  box-shadow: 0 0 8px rgba(251,191,36,.80), 0 0 20px rgba(245,158,11,.40);
+}
+
+.qstar-sun-ray {
+  position: absolute;
+  width: 38px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent 0%, rgba(245,158,11,.9) 28%, rgba(251,191,36,1) 50%, rgba(245,158,11,.9) 72%, transparent 100%);
+}
+.qstar-sun-ray:nth-child(1) { rotate: 0deg; }
+.qstar-sun-ray:nth-child(2) { rotate: 45deg; }
+.qstar-sun-ray:nth-child(3) { rotate: 90deg; }
+.qstar-sun-ray:nth-child(4) { rotate: 135deg; }
+
+.qstar-pointer-sun::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 1px solid rgba(245,158,11,.34);
+  animation: qstarSunRing 1.7s ease-in-out infinite;
+}
+
+html.dark .qstar-pointer-sun { display: none; }
+html:not(.dark) .qstar-pointer-star { display: none; }
+
+/* Dark-mode star dust trail */
+.qstar-cursor-trail {
+  position: fixed;
+  z-index: 2147483646;
+  pointer-events: none;
+  width: var(--qstar-trail-size, 5px);
+  height: var(--qstar-trail-size, 5px);
+  left: var(--qstar-trail-x, 0px);
+  top: var(--qstar-trail-y, 0px);
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 0 6px rgba(186,230,253,.9), 0 0 14px rgba(129,140,248,.55);
+  animation: qstarTrailVanish 620ms cubic-bezier(.16,1,.3,1) forwards;
+}
+
+/* Opening light flash */
+#qstar-opening-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483645;
+  pointer-events: none;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  animation: qstarFlashLayer 1250ms ease-out forwards;
+}
+
+.qstar-opening-line,
+.qstar-opening-ring,
+.qstar-opening-core,
+.qstar-opening-halo {
+  position: absolute;
+  pointer-events: none;
+}
+
+.qstar-opening-line {
+  width: min(84vw, 980px);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), rgba(255,250,225,1), rgba(255,255,255,.12), transparent);
+  filter: drop-shadow(0 0 9px rgba(251,191,36,.9));
+  animation: qstarFlashLine 900ms cubic-bezier(.16,1,.3,1) forwards;
+}
+.qstar-opening-line.qstar-v { rotate: 90deg; width: min(66vh, 720px); }
+.qstar-opening-line.qstar-d1 { rotate: 35deg; width: min(62vw, 680px); height: 1px; }
+.qstar-opening-line.qstar-d2 { rotate: -35deg; width: min(62vw, 680px); height: 1px; }
+
+.qstar-opening-ring {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,246,207,.98);
+  box-shadow: 0 0 26px rgba(251,191,36,.55), inset 0 0 12px rgba(255,255,255,.48);
+  animation: qstarFlashRing 1050ms cubic-bezier(.16,1,.3,1) forwards;
+}
+
+.qstar-opening-core {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 14px 5px rgba(255,255,255,.95), 0 0 48px 18px rgba(251,191,36,.6);
+  animation: qstarFlashCore 850ms ease-out forwards;
+}
+
+.qstar-opening-halo {
+  width: 20vmax;
+  height: 20vmax;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,248,220,.20) 0%, rgba(251,191,36,.08) 38%, transparent 72%);
+  animation: qstarFlashHalo 1150ms ease-out forwards;
+}
+
+@keyframes qstarStarPulse {
+  0%,100% { transform: scale(.88) rotate(-2deg); opacity: .88; }
+  50% { transform: scale(1.08) rotate(3deg); opacity: 1; }
+}
+@keyframes qstarStarGlow {
+  0%,100% { scale: .78; opacity: .48; }
+  50% { scale: 1.34; opacity: .98; }
+}
+@keyframes qstarOrbitSpin { to { transform: rotate(360deg); } }
+@keyframes qstarSunTurn { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes qstarSunRing {
+  0%,100% { scale: .72; opacity: .22; }
+  50% { scale: 1.22; opacity: .62; }
+}
+@keyframes qstarTrailVanish {
+  0% { opacity: .92; transform: translate(-50%,-50%) rotate(45deg) scale(1); }
+  100% { opacity: 0; transform: translate(-50%,-50%) rotate(105deg) scale(.08); }
+}
+@keyframes qstarFlashLayer {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes qstarFlashLine {
+  0% { transform: scaleX(.01); opacity: 0; }
+  18% { opacity: 1; }
+  58% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1.2); opacity: 0; }
+}
+@keyframes qstarFlashRing {
+  0% { transform: scale(.15); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: scale(10); opacity: 0; }
+}
+@keyframes qstarFlashCore {
+  0% { transform: scale(0); opacity: 0; }
+  14% { transform: scale(1.8); opacity: 1; }
+  58% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(.25); opacity: 0; }
+}
+@keyframes qstarFlashHalo {
+  0% { transform: scale(.1); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: scale(4.5); opacity: 0; }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  #qstar-theme-cursor { display: none !important; }
+}

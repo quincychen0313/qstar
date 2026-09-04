@@ -14,7 +14,6 @@ import { CompatibilityReport } from './components/CompatibilityReport';
 import { CompositeView } from './components/CompositeView';
 import { DualBirthModal } from './components/DualBirthModal';
 import { Navbar } from './components/Navbar';
-import { CosmicCursor } from './components/CosmicCursor';
 import { useApp } from './context/AppContext';
 import confetti from 'canvas-confetti';
 import { Sparkles, Calendar, MapPin, Compass, Info, X, Heart, Users, ArrowLeftRight } from 'lucide-react';
@@ -123,7 +122,6 @@ export function App() {
 
   return (
     <>
-      <CosmicCursor />
       <div className="min-h-screen bg-[#f8fafc] dark:bg-[#080c16] text-slate-800 dark:text-slate-100 flex flex-col celestial-bg transition-colors duration-200">
       {/* 頂部導航列 */}
       <Navbar
