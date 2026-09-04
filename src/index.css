@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased transition-colors duration-300;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  /* 淺色模式基底樣式 */
+  html:not(.dark) body {
+    @apply bg-[#f8fafc] text-slate-800 selection:bg-amber-500/20 selection:text-amber-800;
+    color: #1e293b;
+  }
+
+  /* 深色模式基底樣式 */
+  html.dark body {
+    @apply bg-[#080c16] text-slate-100 selection:bg-amber-500/30 selection:text-amber-200;
+  }
+}
+
+/* 列印樣式優化 */
+@media print {
+  header, button, form, .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .bg-slate-900, .bg-slate-950 {
+    background: transparent !important;
+    border-color: #cbd5e1 !important;
+  }
+}
+
+/* 自訂淡入動畫 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 深色模式星空點綴背景 */
+html.dark .celestial-bg {
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(251, 191, 36, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 85% 60%, rgba(99, 102, 241, 0.05) 0%, transparent 45%),
+    radial-gradient(circle at 50% 90%, rgba(56, 189, 248, 0.03) 0%, transparent 50%);
+}
+
+/* 淺色模式日光星圖背景 */
+html:not(.dark) .celestial-bg {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(245, 158, 11, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 85% 50%, rgba(99, 102, 241, 0.04) 0%, transparent 45%),
+    radial-gradient(circle at 50% 90%, rgba(14, 165, 233, 0.04) 0%, transparent 50%);
+}
